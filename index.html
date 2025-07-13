@@ -3,23 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <title>📤 Предложка Архива 9-Б</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --accent: #ff2e63;
+      --bg-dark: #1c1c1c;
+      --bg-light: #2e2e2e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       background: linear-gradient(135deg, #0d0d0d, #1f1f1f);
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
     }
 
     h1 {
-      font-size: 2em;
-      color: #ff2e63;
+      font-size: 1.8em;
+      color: var(--accent);
       margin-bottom: 0.3em;
-      animation: fadeIn 1.2s ease;
+      text-align: center;
     }
 
     p {
@@ -27,37 +38,52 @@
       text-align: center;
       max-width: 600px;
       margin-bottom: 1em;
-      animation: fadeIn 1.4s ease;
+      font-size: 0.95em;
     }
 
     form {
-      background: #1c1c1c;
+      background: var(--bg-dark);
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255, 46, 99, 0.3);
+      box-shadow: 0 0 10px rgba(255, 46, 99, 0.2);
       max-width: 500px;
       width: 100%;
-      animation: slideUp 1s ease;
     }
 
     textarea, input[type="text"] {
       width: 100%;
       margin: 10px 0;
       padding: 12px;
-      background: #2e2e2e;
+      background: var(--bg-light);
       border: none;
       border-radius: 8px;
       color: white;
       font-size: 1em;
     }
 
+    .file-label {
+      display: inline-block;
+      margin: 10px 0;
+      padding: 10px 14px;
+      background-color: var(--accent);
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: background 0.3s;
+      text-align: center;
+    }
+
+    .file-label:hover {
+      background-color: #ff4d7a;
+    }
+
     input[type="file"] {
-      margin-top: 10px;
-      color: #fff;
+      display: none;
     }
 
     button {
-      background: #ff2e63;
+      background: var(--accent);
       border: none;
       padding: 12px;
       width: 100%;
@@ -66,6 +92,7 @@
       font-size: 1.1em;
       cursor: pointer;
       transition: background 0.3s ease;
+      margin-top: 10px;
     }
 
     button:hover {
@@ -79,12 +106,17 @@
     }
 
     .info {
-      margin-top: 40px;
+      margin-top: 30px;
       max-width: 600px;
       background: #252525;
       padding: 20px;
       border-radius: 10px;
-      border-left: 5px solid #ff2e63;
+      border-left: 5px solid var(--accent);
+      font-size: 0.92em;
+    }
+
+    .info ul {
+      padding-left: 1.2em;
     }
 
     .info a {
@@ -92,14 +124,23 @@
       text-decoration: none;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      h1 {
+        font-size: 1.5em;
+      }
+
+      textarea, input[type="text"] {
+        font-size: 0.95em;
+        padding: 10px;
+      }
+
+      button, .file-label {
+        font-size: 0.95em;
+      }
     }
   </style>
 </head>
@@ -109,9 +150,12 @@
   <p>Пиши анонимно! Всё улетит напрямую админу. Он может опубликовать это в <a href="https://t.me/+EPyNbUau9QFkMTky" target="_blank">наш канал</a>, проигнорировать или просто послать тебя 🫠<br>Хочешь ответа? Оставь свой @юзер — админ напишет.</p>
 
   <form id="suggestionForm" enctype="multipart/form-data">
-    <textarea id="suggestionText" rows="5" placeholder="Твоя идея..." required></textarea>
+    <textarea id="suggestionText" rows="4" placeholder="Твоя идея..." required></textarea>
     <input type="text" id="contactInfo" placeholder="@твой_юзернейм (необязательно)">
+    
+    <label class="file-label" for="mediaFile">📎 Прикрепить фото/видео</label>
     <input type="file" id="mediaFile" accept="image/*,video/*">
+
     <button type="submit">🚀 Отправить</button>
     <p id="status" class="status"></p>
   </form>
@@ -128,8 +172,8 @@
   </div>
 
   <script>
-    const BOT_TOKEN = 'ВАШ_ТОКЕН_ТУТ';
-    const CHAT_ID = '-1002368041126'; // или юзай личный ID для тестов
+    const BOT_TOKEN = '7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI';
+    const CHAT_ID = '-1002368041126';
 
     const form = document.getElementById('suggestionForm');
     const status = document.getElementById('status');
@@ -147,7 +191,7 @@
         return;
       }
 
-      const fullText = `📨 Новая предложка:\n\n${text}\n\n📞 Контакт: ${contact || 'не указан'}`;
+      const fullText = `📨 Предложка:\n\n${text}\n\n📞 Контакт: ${contact || 'не указан'}`;
 
       try {
         if (file) {
