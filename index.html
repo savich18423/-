@@ -5,147 +5,194 @@
   <title>📤 Предложка Архива 9-Б</title>
   <style>
     body {
-      background: #0d0d0d;
-      color: #eaeaea;
-      font-family: monospace;
-      padding: 30px;
+      margin: 0;
+      background: linear-gradient(135deg, #0d0d0d, #1f1f1f);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
     }
+
     h1 {
-      text-align: center;
-      color: #ff0055;
+      font-size: 2em;
+      color: #ff2e63;
+      margin-bottom: 0.3em;
+      animation: fadeIn 1.2s ease;
     }
+
+    p {
+      color: #ccc;
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 1em;
+      animation: fadeIn 1.4s ease;
+    }
+
     form {
-      max-width: 500px;
-      margin: auto;
       background: #1c1c1c;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 0 10px #ff005540;
+      box-shadow: 0 0 15px rgba(255, 46, 99, 0.3);
+      max-width: 500px;
+      width: 100%;
+      animation: slideUp 1s ease;
     }
-    textarea, input, button {
+
+    textarea, input[type="text"] {
       width: 100%;
       margin: 10px 0;
-      padding: 10px;
+      padding: 12px;
+      background: #2e2e2e;
       border: none;
-      border-radius: 6px;
-      font-family: inherit;
+      border-radius: 8px;
+      color: white;
       font-size: 1em;
     }
-    textarea {
-      background: #2c2c2c;
-      color: #fff;
-      resize: vertical;
-    }
-    input[type="text"], input[type="file"] {
-      background: #2c2c2c;
+
+    input[type="file"] {
+      margin-top: 10px;
       color: #fff;
     }
+
     button {
-      background: #ff0055;
+      background: #ff2e63;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
       color: white;
+      font-size: 1.1em;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
+
     button:hover {
-      background: #ff3366;
+      background: #ff4d7a;
     }
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.4s ease;
+
+    .status {
+      margin-top: 12px;
+      text-align: center;
       font-size: 0.9em;
     }
-    .toast.show {
-      opacity: 1;
-      pointer-events: auto;
+
+    .info {
+      margin-top: 40px;
+      max-width: 600px;
+      background: #252525;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 5px solid #ff2e63;
+    }
+
+    .info a {
+      color: #ff4d7a;
+      text-decoration: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
   <h1>📤 Предложка Архива 9-Б</h1>
-  <form id="suggestionForm">
-    <textarea id="suggestionText" placeholder="Пиши сюда..." rows="5" required></textarea>
-    <input type="text" id="contactInfo" placeholder="@твоя_ссылка (необязательно)">
+  <p>Пиши анонимно! Всё улетит напрямую админу. Он может опубликовать это в <a href="https://t.me/+EPyNbUau9QFkMTky" target="_blank">наш канал</a>, проигнорировать или просто послать тебя 🫠<br>Хочешь ответа? Оставь свой @юзер — админ напишет.</p>
+
+  <form id="suggestionForm" enctype="multipart/form-data">
+    <textarea id="suggestionText" rows="5" placeholder="Твоя идея..." required></textarea>
+    <input type="text" id="contactInfo" placeholder="@твой_юзернейм (необязательно)">
     <input type="file" id="mediaFile" accept="image/*,video/*">
     <button type="submit">🚀 Отправить</button>
+    <p id="status" class="status"></p>
   </form>
 
-  <div id="toast" class="toast"></div>
+  <div class="info">
+    <h3>ℹ️ Как это работает:</h3>
+    <ul>
+      <li>Ваше сообщение и медиа прилетают админу 🔥</li>
+      <li>Он решает — <b>пошлёт в канал</b> или <b>пошлёт вас</b></li>
+      <li>Хотите фидбек? — оставьте свой @юзер</li>
+      <li>Публикация — анонимна (если вы сами не представитесь)</li>
+    </ul>
+    <p>📢 <b>Канал предложек:</b> 👉 <a href="https://t.me/+EPyNbUau9QFkMTky" target="_blank">t.me/+EPyNbUau9QFkMTky</a></p>
+  </div>
 
   <script>
-    const BOT_TOKEN = '7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI';         // 🔁 Вставь сюда свой токен
-    const CHAT_ID = '-1002368041126';              // 🔁 Вставь сюда свой chat_id (например, -1001234567890)
+    const BOT_TOKEN = 'ВАШ_ТОКЕН_ТУТ';
+    const CHAT_ID = '-1002368041126'; // или юзай личный ID для тестов
 
     const form = document.getElementById('suggestionForm');
-    const toast = document.getElementById('toast');
+    const status = document.getElementById('status');
 
-    function showToast(msg, bg = '#28a745') {
-      toast.textContent = msg;
-      toast.style.backgroundColor = bg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 4000);
-    }
-
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
+      status.textContent = '';
 
       const text = document.getElementById('suggestionText').value.trim();
       const contact = document.getElementById('contactInfo').value.trim();
       const file = document.getElementById('mediaFile').files[0];
-      const fullText = `📨 Предложка:\n\n${text}\n\n📞 Контакт: ${contact || 'Не указан'}`;
 
-      if (text.length < 5) {
-        showToast('❌ Слишком коротко!', '#dc3545');
+      if (!text || text.length < 5) {
+        status.textContent = '❗ Минимум 5 символов.';
         return;
       }
 
-      const formData = new FormData();
-      formData.append('chat_id', CHAT_ID);
-      formData.append('caption', fullText);
-
-      let endpoint = '';
-
-      if (file) {
-        const isImage = file.type.startsWith('image/');
-        const isVideo = file.type.startsWith('video/');
-
-        if (!isImage && !isVideo) {
-          showToast('❌ Только фото или видео.', '#dc3545');
-          return;
-        }
-
-        formData.append(isImage ? 'photo' : 'video', file);
-        endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/${isImage ? 'sendPhoto' : 'sendVideo'}`;
-      } else {
-        formData.append('text', fullText);
-        endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-      }
+      const fullText = `📨 Новая предложка:\n\n${text}\n\n📞 Контакт: ${contact || 'не указан'}`;
 
       try {
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          body: formData
-        });
+        if (file) {
+          const formData = new FormData();
+          const isImage = file.type.startsWith('image/');
+          const isVideo = file.type.startsWith('video/');
 
-        if (res.ok) {
-          showToast('✅ Отправлено!');
-          form.reset();
+          if (!isImage && !isVideo) {
+            status.textContent = '❌ Только фото или видео.';
+            return;
+          }
+
+          formData.append(isImage ? 'photo' : 'video', file);
+          formData.append('chat_id', CHAT_ID);
+          formData.append('caption', fullText);
+
+          const endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/${isImage ? 'sendPhoto' : 'sendVideo'}`;
+
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!res.ok) throw new Error();
+
         } else {
-          showToast('❌ Ошибка при отправке.', '#dc3545');
+          const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: CHAT_ID,
+              text: fullText
+            })
+          });
+
+          if (!res.ok) throw new Error();
         }
+
+        status.textContent = '✅ Отправлено!';
+        form.reset();
+
       } catch (err) {
-        showToast('⚠️ Сеть недоступна.', '#ffc107');
+        status.textContent = '❌ Ошибка отправки.';
       }
     });
   </script>
-
 </body>
 </html>
