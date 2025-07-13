@@ -1,107 +1,61 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Архив 9-Б — предложка</title>
+  <meta charset="UTF-8" />
+  <title>Предложка Архива 9-Б</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      background-color: #0d0d0d;
-      color: #eaeaea;
-      font-family: monospace;
-      padding: 30px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #ff0055;
-    }
-    form {
-      max-width: 500px;
-      margin: auto;
-      background: #1c1c1c;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #ff005580;
-    }
-    input, textarea {
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      background: #2c2c2c;
-      border: none;
-      border-radius: 6px;
-      color: white;
-    }
-    input[type="file"] {
-      background: none;
-    }
-    button {
-      background: #ff0055;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:hover {
-      background: #ff3377;
-    }
-    .status {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 0.9em;
-    }
+    body { background: #111; color: #eee; font-family: monospace; padding: 20px; }
+    form { max-width: 500px; margin: auto; background: #222; padding: 20px; border-radius: 12px; }
+    input, textarea { width: 100%; margin: 10px 0; padding: 10px; border: none; border-radius: 6px; background: #333; color: #fff; }
+    button { background: #ff0055; border: none; padding: 10px; color: white; width: 100%; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #ff3366; }
+    .status { text-align: center; margin-top: 15px; font-size: 0.9em; }
   </style>
 </head>
 <body>
-
-  <h1>📤 Предложка Архива 9-Б</h1>
-
-  <form id="suggestionForm">
-    <input type="text" id="name" placeholder="Кто ты (можно не писать)">
-    <textarea id="message" rows="4" placeholder="Пиши сюда всё что хочешь..."></textarea>
-    <input type="file" id="file">
+  <h1 style="text-align:center;">📤 Предложка Архива 9-Б</h1>
+  <form id="form">
+    <input type="text" id="name" placeholder="Кто ты (можно не писать)" />
+    <textarea id="message" placeholder="Пиши сюда всё, что хочешь..."></textarea>
+    <input type="file" id="file" />
     <button type="submit">Отправить</button>
     <div class="status" id="status"></div>
   </form>
 
   <script>
-    document.getElementById('suggestionForm').addEventListener('submit', async function(e) {
+    const form = document.getElementById('form');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('name').value || 'Аноним';
       const message = document.getElementById('message').value;
       const file = document.getElementById('file').files[0];
-      const status = document.getElementById('status');
 
       if (!message && !file) {
-        status.innerText = 'Нужно написать сообщение или прикрепить файл.';
+        status.textContent = 'Нужно хоть что-то отправить.';
         return;
       }
 
       const formData = new FormData();
-      formData.append('chat_id', '-1002368041126');
-      formData.append('caption', `<b>👤 От:</b> ${name}\n\n📝 ${message}`);
-      formData.append('parse_mode', 'HTML');
+      formData.append('name', name);
+      formData.append('message', message);
+      if (file) formData.append('file', file);
 
-      if (file) {
-        formData.append('document', file);
-        await fetch(`https://api.telegram.org/bot7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI/sendDocument`, {
-          method: 'POST',
-          body: formData
-        });
+      const res = await fetch('/send', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        status.textContent = '✅ Отправлено!';
+        form.reset();
       } else {
-        formData.append('text', `<b>👤 От:</b> ${name}\n\n📝 ${message}`);
-        await fetch(`https://api.telegram.org/bot7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI/sendMessage`, {
-          method: 'POST',
-          body: formData
-        });
+        status.textContent = '❌ Ошибка при отправке.';
       }
-
-      status.innerText = '✅ Отправлено!';
-      document.getElementById('suggestionForm').reset();
     });
   </script>
-
 </body>
 </html>
+
