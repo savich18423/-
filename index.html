@@ -80,19 +80,19 @@
       }
 
       const formData = new FormData();
-      formData.append('chat_id', 'YOUR_CHAT_ID');
+      formData.append('chat_id', '-1002368041126');
       formData.append('caption', `<b>👤 От:</b> ${name}\n\n📝 ${message}`);
       formData.append('parse_mode', 'HTML');
 
       if (file) {
         formData.append('document', file);
-        await fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendDocument`, {
+        await fetch(`https://api.telegram.org/bot7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI/sendDocument`, {
           method: 'POST',
           body: formData
         });
       } else {
         formData.append('text', `<b>👤 От:</b> ${name}\n\n📝 ${message}`);
-        await fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI/sendMessage`, {
           method: 'POST',
           body: formData
         });
