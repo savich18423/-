@@ -12,13 +12,7 @@
     }
     h1 {
       text-align: center;
-      margin-bottom: 10px;
       color: #ff0055;
-    }
-    p {
-      text-align: center;
-      margin-top: 0;
-      color: #aaa;
     }
     form {
       max-width: 500px;
@@ -28,110 +22,127 @@
       border-radius: 12px;
       box-shadow: 0 0 10px #ff005540;
     }
-    input, textarea {
+    textarea, input, button {
       width: 100%;
       margin: 10px 0;
       padding: 10px;
-      background: #2c2c2c;
       border: none;
       border-radius: 6px;
-      color: white;
+      font-family: inherit;
+      font-size: 1em;
+    }
+    textarea {
+      background: #2c2c2c;
+      color: #fff;
+      resize: vertical;
+    }
+    input[type="text"], input[type="file"] {
+      background: #2c2c2c;
+      color: #fff;
     }
     button {
       background: #ff0055;
       color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
       cursor: pointer;
-      width: 100%;
     }
     button:hover {
-      background: #ff3377;
+      background: #ff3366;
     }
-    .status {
-      margin-top: 15px;
-      text-align: center;
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s ease;
       font-size: 0.9em;
     }
-    .info {
-      max-width: 500px;
-      margin: 20px auto;
-      font-size: 0.9em;
-      background: #202020;
-      padding: 15px;
-      border-radius: 10px;
-      border-left: 3px solid #ff0055;
-    }
-    .info code {
-      background: #333;
-      padding: 2px 4px;
-      border-radius: 4px;
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
 
   <h1>📤 Предложка Архива 9-Б</h1>
-  <p>Пиши сюда анонимно. Всё улетит сразу в архивный телеграм 😈</p>
-
   <form id="suggestionForm">
-    <input type="text" id="name" placeholder="Кто ты (можно не писать)">
-    <textarea id="message" rows="5" placeholder="Пиши сюда всё что хочешь..."></textarea>
-    <button type="submit">Отправить</button>
-    <div class="status" id="status"></div>
+    <textarea id="suggestionText" placeholder="Пиши сюда..." rows="5" required></textarea>
+    <input type="text" id="contactInfo" placeholder="@твоя_ссылка (необязательно)">
+    <input type="file" id="mediaFile" accept="image/*,video/*">
+    <button type="submit">🚀 Отправить</button>
   </form>
 
-  <div class="info">
-    <p>📎 <b>Хочешь отправить фото, файл, скрин или видео?</b></p>
-    <p>Telegram <b>не даёт отправлять файлы прямо с сайта</b>, но ты можешь:</p>
-    <ol>
-      <li>Открыть <code>@YourBotName</code> в Telegram</li>
-      <li>Просто <b>переслать туда файл</b> (фото, видео, документ)</li>
-      <li>Если хочешь — <b>добавь подпись</b> (бот её тоже передаст)</li>
-    </ol>
-    <p>📭 Всё придёт анонимно в архив, как и сообщение с формы выше.</p>
-  </div>
+  <div id="toast" class="toast"></div>
 
   <script>
-    const BOT_TOKEN = '7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI';
-    const CHAT_ID = '-1002368041126'; // канал/чат/группа
+    const BOT_TOKEN = '7614126569:AAEEH8UiIFhtGyyqIsQlpbEhH3H5Zncy4lI';         // 🔁 Вставь сюда свой токен
+    const CHAT_ID = '-1002368041126';              // 🔁 Вставь сюда свой chat_id (например, -1001234567890)
 
-    document.getElementById('suggestionForm').addEventListener('submit', async function(e) {
+    const form = document.getElementById('suggestionForm');
+    const toast = document.getElementById('toast');
+
+    function showToast(msg, bg = '#28a745') {
+      toast.textContent = msg;
+      toast.style.backgroundColor = bg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value || 'Аноним';
-      const message = document.getElementById('message').value.trim();
-      const status = document.getElementById('status');
 
-      if (!message) {
-        status.textContent = '❗ Нужно что-то написать.';
+      const text = document.getElementById('suggestionText').value.trim();
+      const contact = document.getElementById('contactInfo').value.trim();
+      const file = document.getElementById('mediaFile').files[0];
+      const fullText = `📨 Предложка:\n\n${text}\n\n📞 Контакт: ${contact || 'Не указан'}`;
+
+      if (text.length < 5) {
+        showToast('❌ Слишком коротко!', '#dc3545');
         return;
       }
 
-      const text = `<b>👤 От:</b> ${name}\n\n📝 ${message}`;
-      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+      const formData = new FormData();
+      formData.append('chat_id', CHAT_ID);
+      formData.append('caption', fullText);
+
+      let endpoint = '';
+
+      if (file) {
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+
+        if (!isImage && !isVideo) {
+          showToast('❌ Только фото или видео.', '#dc3545');
+          return;
+        }
+
+        formData.append(isImage ? 'photo' : 'video', file);
+        endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/${isImage ? 'sendPhoto' : 'sendVideo'}`;
+      } else {
+        formData.append('text', fullText);
+        endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+      }
 
       try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            chat_id: CHAT_ID,
-            text: text,
-            parse_mode: "HTML"
-          })
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          body: formData
         });
 
         if (res.ok) {
-          status.textContent = '✅ Отправлено!';
-          document.getElementById('suggestionForm').reset();
+          showToast('✅ Отправлено!');
+          form.reset();
         } else {
-          status.textContent = '❌ Ошибка при отправке.';
+          showToast('❌ Ошибка при отправке.', '#dc3545');
         }
       } catch (err) {
-        status.textContent = '⚠️ Проблема с подключением.';
+        showToast('⚠️ Сеть недоступна.', '#ffc107');
       }
     });
   </script>
