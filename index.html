@@ -1,61 +1,140 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Предложка Архива 9-Б</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>📤 Предложка Архива 9-Б</title>
   <style>
-    body { background: #111; color: #eee; font-family: monospace; padding: 20px; }
-    form { max-width: 500px; margin: auto; background: #222; padding: 20px; border-radius: 12px; }
-    input, textarea { width: 100%; margin: 10px 0; padding: 10px; border: none; border-radius: 6px; background: #333; color: #fff; }
-    button { background: #ff0055; border: none; padding: 10px; color: white; width: 100%; border-radius: 6px; cursor: pointer; }
-    button:hover { background: #ff3366; }
-    .status { text-align: center; margin-top: 15px; font-size: 0.9em; }
+    body {
+      background: #0d0d0d;
+      color: #eaeaea;
+      font-family: monospace;
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #ff0055;
+    }
+    p {
+      text-align: center;
+      margin-top: 0;
+      color: #aaa;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: #1c1c1c;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ff005540;
+    }
+    input, textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background: #2c2c2c;
+      border: none;
+      border-radius: 6px;
+      color: white;
+    }
+    button {
+      background: #ff0055;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background: #ff3377;
+    }
+    .status {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 0.9em;
+    }
+    .info {
+      max-width: 500px;
+      margin: 20px auto;
+      font-size: 0.9em;
+      background: #202020;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 3px solid #ff0055;
+    }
+    .info code {
+      background: #333;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;">📤 Предложка Архива 9-Б</h1>
-  <form id="form">
-    <input type="text" id="name" placeholder="Кто ты (можно не писать)" />
-    <textarea id="message" placeholder="Пиши сюда всё, что хочешь..."></textarea>
-    <input type="file" id="file" />
+
+  <h1>📤 Предложка Архива 9-Б</h1>
+  <p>Пиши сюда анонимно. Всё улетит сразу в архивный телеграм 😈</p>
+
+  <form id="suggestionForm">
+    <input type="text" id="name" placeholder="Кто ты (можно не писать)">
+    <textarea id="message" rows="5" placeholder="Пиши сюда всё что хочешь..."></textarea>
     <button type="submit">Отправить</button>
     <div class="status" id="status"></div>
   </form>
 
-  <script>
-    const form = document.getElementById('form');
-    const status = document.getElementById('status');
+  <div class="info">
+    <p>📎 <b>Хочешь отправить фото, файл, скрин или видео?</b></p>
+    <p>Telegram <b>не даёт отправлять файлы прямо с сайта</b>, но ты можешь:</p>
+    <ol>
+      <li>Открыть <code>@YourBotName</code> в Telegram</li>
+      <li>Просто <b>переслать туда файл</b> (фото, видео, документ)</li>
+      <li>Если хочешь — <b>добавь подпись</b> (бот её тоже передаст)</li>
+    </ol>
+    <p>📭 Всё придёт анонимно в архив, как и сообщение с формы выше.</p>
+  </div>
 
-    form.addEventListener('submit', async (e) => {
+  <script>
+    const BOT_TOKEN = 'ТВОЙ_ТОКЕН';
+    const CHAT_ID = '-100xxxxxxxxxxx'; // канал/чат/группа
+
+    document.getElementById('suggestionForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const name = document.getElementById('name').value || 'Аноним';
-      const message = document.getElementById('message').value;
-      const file = document.getElementById('file').files[0];
+      const message = document.getElementById('message').value.trim();
+      const status = document.getElementById('status');
 
-      if (!message && !file) {
-        status.textContent = 'Нужно хоть что-то отправить.';
+      if (!message) {
+        status.textContent = '❗ Нужно что-то написать.';
         return;
       }
 
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('message', message);
-      if (file) formData.append('file', file);
+      const text = `<b>👤 От:</b> ${name}\n\n📝 ${message}`;
+      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-      const res = await fetch('/send', {
-        method: 'POST',
-        body: formData,
-      });
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: text,
+            parse_mode: "HTML"
+          })
+        });
 
-      if (res.ok) {
-        status.textContent = '✅ Отправлено!';
-        form.reset();
-      } else {
-        status.textContent = '❌ Ошибка при отправке.';
+        if (res.ok) {
+          status.textContent = '✅ Отправлено!';
+          document.getElementById('suggestionForm').reset();
+        } else {
+          status.textContent = '❌ Ошибка при отправке.';
+        }
+      } catch (err) {
+        status.textContent = '⚠️ Проблема с подключением.';
       }
     });
   </script>
+
 </body>
 </html>
-
